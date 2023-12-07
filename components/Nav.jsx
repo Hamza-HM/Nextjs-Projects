@@ -7,15 +7,17 @@ import { signIn, signOut, useSession, getProviders } from "next-auth/react";
 
 const Nav = () => {
   const isUserLoggedIn = true;
+  const {data: session} = useSession();
 
   const [providers, setProviders] = useState(null);
   const [toggleDropDown, settoggleDropDown] = useState(false);
 
   useEffect(() => {
-    ( async () => {
+    const  fetchProviders = async () => {
       const res = await getProviders();
-      setProviders();
-    }) ();
+      setProviders(res);
+    }
+    fetchProviders();
   }, []);
   return (
     <nav className="flex-between w-full mb-16 pt-3">
@@ -29,9 +31,10 @@ const Nav = () => {
         />
         <p className="logo_text">Promptopia</p>
       </Link>
+      {/* {alert(session?.user)} */}
       {/* Desktop Navifation */}
       <div className="sm:flex hidden">
-        {isUserLoggedIn ? (
+        {session?.user ? (
           <div className="flex gap-3 md:gap-5">
             <Link href="/create-prompt" className="black_btn">
               Create Post
@@ -42,7 +45,7 @@ const Nav = () => {
 
             <Link href="/profile">
               <Image
-                src="/assets/images/logo.svg"
+                src={session?.user.image}
                 width={37}
                 height={37}
                 className="rounded-full"
@@ -54,7 +57,7 @@ const Nav = () => {
           <>
             {providers &&
               Object.values(
-                providers.map((provider) => (
+                providers).map((provider) => (
                   <button
                     type="button"
                     key={provider.name}
@@ -64,16 +67,16 @@ const Nav = () => {
                     Sign In
                   </button>
                 ))
-              )}
+              }
           </>
         )}
       </div>
       {/* Mobile navigation */}
       <div className="sm:hidden flex relative">
-        {isUserLoggedIn ? (
+        {session?.user ? (
           <div className="flex">
             <Image
-              src="/assets/images/logo.svg"
+              src={session?.user.image}
               width={37}
               height={37}
               className="rounded-full"
@@ -109,8 +112,7 @@ const Nav = () => {
         ) : (
           <>
             {providers &&
-              Object.values(
-                providers.map((provider) => (
+              Object.values(providers).map((provider) => (
                   <button
                     type="button"
                     key={provider.name}
@@ -120,7 +122,7 @@ const Nav = () => {
                     Sign In
                   </button>
                 ))
-              )}
+              }
           </>
         )}
       </div>

@@ -2,6 +2,8 @@ import NextAuth from 'next-auth';
 import GoogleProvider from 'next-auth/providers/google';
 import { connectToDB } from '@utils/database';
 
+import user from '@models/user';
+
 const handler = NextAuth({
     providers: [
         GoogleProvider({
@@ -9,20 +11,33 @@ const handler = NextAuth({
             clientSecret: process.env.GOOGLE_CLIENT_SECRET,
         })
     ],
-    async session({session}) {
-
-    },
-    async signIn({profile}) {
-        //serverless =>  lambda => dunamodb
-        try {
-            await connectToDB();
-            //
-            //
-            return true;
-        }catch (err) {
-            console.log(err)
-            return false;
+    callbacks : {
+        async session({session}) {
+            const sessionUser = await user.findOne({
+                email: session.user.email
+            })
+            session.user.id = sessionUser._id.toString();
+            return session;
+        },
+        async signIn({profile}) {
+            //serverless =>  lambda => dunamodb
+            try {
+                await connectToDB();
+                const userExists = await user.findOne({email: profile.email})
+                if(!userExists) {
+                    await user.create({
+                        email:  profile.email,
+                        username:  profile.name.replace(' ', '').toLowerCase(),
+                        image: profile.picture
+                    })
+                }
+                return true;
+            }catch (err) {
+                console.log(err)
+                return false;
+            }
         }
+
     }
 })
 
