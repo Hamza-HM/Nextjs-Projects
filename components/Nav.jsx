@@ -7,16 +7,16 @@ import { signIn, signOut, useSession, getProviders } from "next-auth/react";
 
 const Nav = () => {
   const isUserLoggedIn = true;
-  const {data: session} = useSession();
+  const { data: session } = useSession();
 
   const [providers, setProviders] = useState(null);
   const [toggleDropDown, settoggleDropDown] = useState(false);
 
   useEffect(() => {
-    const  fetchProviders = async () => {
+    const fetchProviders = async () => {
       const res = await getProviders();
       setProviders(res);
-    }
+    };
     fetchProviders();
   }, []);
   return (
@@ -56,18 +56,16 @@ const Nav = () => {
         ) : (
           <>
             {providers &&
-              Object.values(
-                providers).map((provider) => (
-                  <button
-                    type="button"
-                    key={provider.name}
-                    onClick={() => signIn(provider.id)}
-                    className="black_btn"
-                  >
-                    Sign In
-                  </button>
-                ))
-              }
+              Object.values(providers).map((provider) => (
+                <button
+                  type="button"
+                  key={provider.name}
+                  onClick={() => signIn(provider.id)}
+                  className="black_btn"
+                >
+                  Sign In
+                </button>
+              ))}
           </>
         )}
       </div>
@@ -90,19 +88,22 @@ const Nav = () => {
                   className="dropdown_link"
                   onClick={() => settoggleDropDown(false)}
                 >
-                My Profile
+                  My Profile
                 </Link>
                 <Link
-                  href="/profile"
+                  href="/create-prompt"
                   className="dropdown_link"
                   onClick={() => settoggleDropDown(false)}
                 >
-                Create Prompt
+                  Create Prompt
                 </Link>
                 <button
-                type="button"
-                onClick={() => {toggleDropDown(false); signOut();}}
-                className="mt-5 w-full black_btn"
+                  type="button"
+                  onClick={() => {
+                    toggleDropDown(false);
+                    signOut();
+                  }}
+                  className="mt-5 w-full black_btn"
                 >
                   Sign Out
                 </button>
@@ -113,16 +114,15 @@ const Nav = () => {
           <>
             {providers &&
               Object.values(providers).map((provider) => (
-                  <button
-                    type="button"
-                    key={provider.name}
-                    onClick={() => signIn(provider.id)}
-                    className="black_btn"
-                  >
-                    Sign In
-                  </button>
-                ))
-              }
+                <button
+                  type="button"
+                  key={provider.name}
+                  onClick={() => signIn(provider.id)}
+                  className="black_btn"
+                >
+                  Sign In
+                </button>
+              ))}
           </>
         )}
       </div>
